@@ -4,6 +4,10 @@ config.load_config()
 
 v1 = client.CoreV1Api()
 print("Listing pods with their IPs:")
-ret = v1.list_pod_for_all_namespaces()
+list_pod = v1.list_pod_for_all_namespaces()
 
-print(ret)
+for pod in list_pod.items:
+    if 'env' in pod.metadata.labels.keys() and pod.metadata.labels['env'] == 'test':
+        print(pod.metadata.name, pod.metadata.labels)
+    else:
+        continue
