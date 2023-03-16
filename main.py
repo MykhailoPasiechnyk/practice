@@ -6,16 +6,16 @@ FORMAT = '%(asctime)s - %(message)s'
 
 
 def get_pod_age(pod_data):
-    time_now = datetime.now()
-    day_minutes = int(time_now.minute + ((time_now.hour - 1) * 60))
-    pod_start_time = pod_data.status.start_time
-    pod_start_time_in_minutes = int(pod_start_time.minute + (pod_start_time.hour * 60))
-    return day_minutes - pod_start_time_in_minutes
+    created_time = pod_data.metadata.creation_timestamp
+    current_time = datetime.now(created_time.tzinfo)
+    age_seconds = (current_time - created_time).total_seconds()
+    age_hours, age_minutes = divmod(age_seconds // 60, 60)
+    return f'{int(age_hours)}h:{int(age_minutes)}m'
 
 
 def get_time_log(pod_data, log_format, age):
     logging.basicConfig(format=log_format, level=logging.INFO)
-    logging.info(f'Name: {pod_data.metadata.name}, labels: {pod_data.metadata.labels}, AGE: {age}min;')
+    logging.info(f'Name: {pod_data.metadata.name}, labels: {pod_data.metadata.labels}, AGE: {age};')
 
 
 if __name__ == '__main__':
